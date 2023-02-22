@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .form_container {
+            width: 50rem;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        input {
+            margin: 0.5rem;
+            font-size: medium;
+            padding: 0.3rem 0.5rem;
+            border: .1rem solid lightgray;
+            border-radius: 0.3rem;
+        }
+
+        h3 {
+            text-align: center;
+            margin: 0;
+        }
+        .small-box {
+            width: 20%;
+        }
+        .long-box {
+            width: 45%;
+        }
+
+        /* checkbox */
+        .checkbox_container{
+            display: flex;
+            padding-left: 10rem;
+            width: 75%;
+        }
+        .checkbox {
+            display: flex;
+            font-size: small;
+            margin: 0 2rem;
+            font-weight: bold;
+        }
+        .checkbox_terms {
+            width: 65%;
+            font-family: 'Courier New';
+            font-size: small;
+            margin: 0 .5rem;
+        }
+        .checkbox_terms p {
+            display: inline-block;
+            text-align: left;
+        }
+
+        /* buttons */
+        button {
+            margin: 0 .5rem;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 0.3rem;
+            padding: .5rem 4rem;
+            font-size: 1rem;
+        }
+        #Reg {
+            background-color: rgb(28, 129, 191);
+            color: white;
+            border: none;
+            border-radius: 0.1rem;
+            padding: 0.1rem 0.3rem;
+        }
+        .registration {
+            background-color: rgb(28, 129, 191);
+        }
+        .signIn {
+            background-color: rgb(67, 174, 90);
+        }
+    </style>    
+</head>
+<body>
+    <div class="form_container">
+        <form>
+            <div class="container">
+                <h3>Sign Up</h3>
+                <div class="input_container">
+                    <input type="text" class="small-box" id="FirstName" placeholder="First Name">
+                    <input type="text" class="small-box" id="LastName" placeholder="Last Name"><br>
+                    <input type="text" class="long-box" id="MobilePhone" placeholder="Mobile No."><br>
+                    <input type="text" class="long-box" id="Email" placeholder="Email Address"><br>
+                    <input type="text" class="small-box" id="Password" placeholder="Password">
+                    <input type="text" class="small-box" id="ConfirmPswd" placeholder="Confirm Password">
+                </div>
+        
+                <div class="checkbox_container">
+                    <div class="checkbox" id="checkbox">
+                        <p><input type="checkbox">I Agree</p>
+                    </div>
+                    <div class="checkbox_terms" id="checkbox_terms">
+                        <p>By Clicking <label type="text" id="Reg">Register</label>, you agree to the <a href="">Terms and Cnodistions</a> set out by this site, including our Cookie Use.</p>
+                    </div>
+                </div>
+        
+                <button type="submit" class="registration">Register</button>
+                <button type="submit" class="signIn">Sign in</button>
+            </div>
+        </form>    
+    </div>
+</body>
+</html>
