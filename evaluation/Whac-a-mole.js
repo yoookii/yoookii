@@ -24,30 +24,34 @@ const View = (() => {
     }
 
     const showMole = () => {
-        // get random holes to show moles 
+        // get at most 3 random holes to show moles 
+        const maxHoles = 3;
         const holes = document.querySelectorAll('.hole');
-        const randomIndex = Math.floor(Math.random() * holes.length);
-        const randomHole = holes[randomIndex];
+        const moles = document.querySelectorAll('.mole_img');
+        if (moles.length < maxHoles) {
+            const randomIndex = Math.floor(Math.random() * holes.length);
+            const randomHole = holes[randomIndex];
 
-        // add moles 
-        const moleImg = document.createElement('img');
-        moleImg.classList.add('mole_img');
-        moleImg.src = 'mole.jpeg';
-        randomHole.appendChild(moleImg);
+            // add moles 
+            const moleImg = document.createElement('img');
+            moleImg.classList.add('mole_img');
+            moleImg.src = 'mole.jpeg';
+            randomHole.appendChild(moleImg);
 
-        // add event listener to mole 
-        moleImg.addEventListener('click', () => {
-            randomHole.removeChild(moleImg);
-            Model.updateScore();
-            View.updateScore(Model.getScore());
-        })
-
-        // disappear after 2s after clicking 
-        setTimeout(() => {
-            if (randomHole.contains(moleImg)) {
+            // add event listener to mole 
+            moleImg.addEventListener('click', () => {
                 randomHole.removeChild(moleImg);
-            }
-        }, 2000);
+                Model.updateScore();
+                View.updateScore(Model.getScore());
+            })
+
+            // disappear after 2s after clicking 
+            setTimeout(() => {
+                if (randomHole.contains(moleImg)) {
+                    randomHole.removeChild(moleImg);
+                }
+            }, 2000);
+        }
     };
 
     const updateScore = (score) => {
@@ -64,16 +68,16 @@ const View = (() => {
 
 // model
 const Model = ((view) => {
-    const { showMole } = view; 
+    const { showMole } = view;
 
     let score = 0;
-    let gameStarted = false; 
+    let gameStarted = false;
 
     const startGame = () => {
-        gameStarted = true; 
-        setInterval( () => {
+        gameStarted = true;
+        setInterval(() => {
             showMole();
-        }, 1500);
+        }, 500);
     }
 
     const updateScore = () => {
@@ -110,7 +114,7 @@ const Controller = ((view, model) => {
     domSelector.startGameBtn.addEventListener('click', () => {
         // start game 
         startGame();
-        
+
         // restart the score 
         domSelector.scoreCount.textContent = resetScore();
 
