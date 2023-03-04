@@ -1,5 +1,5 @@
 // view
-const view = (() => {
+const View = (() => {
     // selectors 
     const domSelector = {
         gameBoard: document.querySelector('#game_board'),
@@ -19,20 +19,6 @@ const view = (() => {
             hole.classList.add('hole');
             hole.id = `hole-${i}`;
             gameBoard.appendChild(hole);
-
-            // add moles 
-            const moleImg = document.createElement('img');
-            moleImg.classList.add('mole_img');
-            moleImg.src = 'mole.jpeg';
-
-            // add event listener to mole 
-            moleImg.addEventListener('click', () => {
-                hole.removeChild(moleImg);
-                model.updateScore();
-                view.updateScore(model.getScore());
-            })
-
-            hole.appendChild(moleImg);
         }
         document.body.appendChild(gameBoard);
     }
@@ -52,13 +38,15 @@ const view = (() => {
         // add event listener to mole 
         moleImg.addEventListener('click', () => {
             randomHole.removeChild(moleImg);
-            model.updateScore();
-            view.updateScore(model.getScore());
+            Model.updateScore();
+            View.updateScore(Model.getScore());
         })
 
         // disappear after 2s after clicking 
         setTimeout(() => {
-            randomHole.removeChild(moleImg);
+            if (randomHole.contains(moleImg)) {
+                randomHole.removeChild(moleImg);
+            }
         }, 2000);
     };
 
@@ -75,15 +63,29 @@ const view = (() => {
 })();
 
 // model
-const model = (() => {
+const Model = ((view) => {
+    const { showMole } = view; 
+
     let score = 0;
+    let gameStarted = false; 
+
+    const startGame = () => {
+        gameStarted = true; 
+        setInterval( () => {
+            showMole();
+        }, 1500);
+    }
 
     const updateScore = () => {
-        score += 1;
+        if (gameStarted) {
+            score += 1;
+            return score;
+        }
     }
 
     const resetScore = () => {
         score = 0;
+        return score;
     };
 
     const getScore = () => {
@@ -91,19 +93,24 @@ const model = (() => {
     }
 
     return {
+        startGame,
         updateScore,
         resetScore,
-        getScore
+        getScore,
+        gameStarted
     }
-})();
+})(View);
 
 // controller
-const controller = (() => {
+const Controller = ((view, model) => {
     const { domSelector, renderBoard, showMole } = view;
-    const { resetScore } = model;
+    const { resetScore, startGame } = model;
 
     // start game, start count down 
     domSelector.startGameBtn.addEventListener('click', () => {
+        // start game 
+        startGame();
+        
         // restart the score 
         domSelector.scoreCount.textContent = resetScore();
 
@@ -125,5 +132,5 @@ const controller = (() => {
         renderBoard();
     }
     return { bootstrap };
-})();
-controller.bootstrap();
+})(View, Model);
+Controller.bootstrap();

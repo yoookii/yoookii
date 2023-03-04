@@ -63,7 +63,7 @@ h1 {
 }
 
 /* images */
-#mole {
+.mole_img {
     height: 200px;
     width: 200px;
 }
