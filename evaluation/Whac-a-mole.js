@@ -23,37 +23,6 @@ const View = (() => {
         document.body.appendChild(gameBoard);
     }
 
-    const showMole = () => {
-        // get at most 3 random holes to show moles 
-        const maxHoles = 3;
-        const holes = document.querySelectorAll('.hole');
-        const moles = document.querySelectorAll('.mole_img');
-        if (moles.length < maxHoles) {
-            const randomIndex = Math.floor(Math.random() * holes.length);
-            const randomHole = holes[randomIndex];
-
-            // add moles 
-            const moleImg = document.createElement('img');
-            moleImg.classList.add('mole_img');
-            moleImg.src = 'mole.jpeg';
-            randomHole.appendChild(moleImg);
-
-            // add event listener to mole 
-            moleImg.addEventListener('click', () => {
-                randomHole.removeChild(moleImg);
-                Model.updateScore();
-                View.updateScore(Model.getScore());
-            })
-
-            // disappear after 2s after clicking 
-            setTimeout(() => {
-                if (randomHole.contains(moleImg)) {
-                    randomHole.removeChild(moleImg);
-                }
-            }, 2000);
-        }
-    };
-
     const updateScore = (score) => {
         domSelector.scoreCount.textContent = score;
     }
@@ -61,23 +30,26 @@ const View = (() => {
     return {
         domSelector,
         renderBoard,
-        showMole,
         updateScore
     };
 })();
 
 // model
 const Model = ((view) => {
-    const { showMole } = view;
-
     let score = 0;
     let gameStarted = false;
+    let moleInterval;
+    let snakeInterval;
 
     const startGame = () => {
         gameStarted = true;
-        setInterval(() => {
+        const moleInterval = setInterval(() => {
             showMole();
-        }, 500);
+        }, 1000);
+        const snakeInterval = setInterval(() => {
+            showSnake();
+        }, 2000);
+        return { moleInterval, snakeInterval };
     }
 
     const updateScore = () => {
@@ -96,11 +68,114 @@ const Model = ((view) => {
         return score;
     }
 
+    const resetBoard = () => {
+        const holes = document.querySelectorAll('.hole');
+        holes.forEach(hole => {
+            hole.innerHTML = '';
+        });
+    }
+
+    const resetGame = () => {
+        gameStarted = false;
+        resetBoard();
+        clearInterval(moleInterval);
+        clearInterval(snakeInterval);
+        return score;
+    }
+
+    const showMole = () => {
+        // check if the game started 
+        if (gameStarted) {
+            // get at most 3 random holes to show moles 
+            const maxHoles = 3;
+            const holes = document.querySelectorAll('.hole');
+            const moles = document.querySelectorAll('.mole_img');
+            if (moles.length < maxHoles) {
+                const randomIndex = Math.floor(Math.random() * holes.length);
+                const randomHole = holes[randomIndex];
+
+                // add moles 
+                const moleImg = document.createElement('img');
+                moleImg.classList.add('mole_img');
+                moleImg.src = 'mole.jpeg';
+                randomHole.appendChild(moleImg);
+
+                // add event listener to mole 
+                moleImg.addEventListener('click', () => {
+                    randomHole.removeChild(moleImg);
+                    Model.updateScore();
+                    View.updateScore(Model.getScore());
+                })
+
+                // disappear after 2s after clicking 
+                setTimeout(() => {
+                    if (randomHole.contains(moleImg)) {
+                        randomHole.removeChild(moleImg);
+                    }
+                }, 2000);
+            }
+        }
+    };
+
+    // add snakes 
+    const showSnake = () => {
+        if (gameStarted) {
+            // get random holes to show snakes 
+            const holes = document.querySelectorAll('.hole');
+            const randomIndexSnake = Math.floor(Math.random() * holes.length);
+            const randomHoleSnake = holes[randomIndexSnake];
+
+            // add snakes 
+            const snakeImg = document.createElement('img');
+            snakeImg.classList.add('snake_img');
+            snakeImg.src = 'mine.jpeg';
+            randomHoleSnake.appendChild(snakeImg);
+
+            // disappear after 2s after clicking 
+            setTimeout(() => {
+                if (randomHoleSnake.contains(snakeImg)) {
+                    randomHoleSnake.removeChild(snakeImg);
+                }
+            }, 2000);
+
+            // add event listener to snake 
+            snakeImg.addEventListener('click', () => {
+                // update score 
+                Model.updateScore();
+                View.updateScore(Model.getScore());
+
+                // clear holes  
+                resetBoard();
+                clearInterval(moleInterval);
+                clearInterval(snakeInterval);
+
+                // all snakes appear 
+                holes.forEach(hole => {
+                    const snakeImg = document.createElement('img');
+                    snakeImg.classList.add('snake_img');
+                    snakeImg.src = 'mine.jpeg';
+                    hole.appendChild(snakeImg);
+                });
+
+                // disappear after 2s after showing all 
+                setTimeout(() => {
+                    holes.forEach(hole => {
+                        hole.innerHTML = '';
+                    });
+                }, 2000);
+            })
+        }
+    };
+
     return {
         startGame,
         updateScore,
         resetScore,
         getScore,
+        resetBoard,
+        resetGame,
+        showMole,
+        showSnake,
         gameStarted
     }
 })(View);
@@ -108,12 +183,13 @@ const Model = ((view) => {
 // controller
 const Controller = ((view, model) => {
     const { domSelector, renderBoard, showMole } = view;
-    const { resetScore, startGame } = model;
+    const { resetScore, startGame, resetGame, resetBoard } = model;
 
     // start game, start count down 
     domSelector.startGameBtn.addEventListener('click', () => {
         // start game 
         startGame();
+        resetBoard();
 
         // restart the score 
         domSelector.scoreCount.textContent = resetScore();
@@ -127,7 +203,8 @@ const Controller = ((view, model) => {
                 time--;
             } else {
                 clearInterval(interval);
-                alert('Game Over!');
+                alert('Time is Over!');
+                resetGame();
             }
         }, 1000);
     });
