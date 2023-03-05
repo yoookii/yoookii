@@ -90,29 +90,32 @@ const Model = ((view) => {
             const maxHoles = 3;
             const holes = document.querySelectorAll('.hole');
             const moles = document.querySelectorAll('.mole_img');
+            const randomIndexMole = Math.floor(Math.random() * holes.length);
+            const randomHoleMole = holes[randomIndexMole];
             if (moles.length < maxHoles) {
-                const randomIndex = Math.floor(Math.random() * holes.length);
-                const randomHole = holes[randomIndex];
+                // check if a mole aready exists
+                const existingMole = randomHoleMole.querySelector('.mole_img');
+                if (!existingMole) {
+                    // add moles 
+                    const moleImg = document.createElement('img');
+                    moleImg.classList.add('mole_img');
+                    moleImg.src = 'mole.jpeg';
+                    randomHoleMole.appendChild(moleImg);
 
-                // add moles 
-                const moleImg = document.createElement('img');
-                moleImg.classList.add('mole_img');
-                moleImg.src = 'mole.jpeg';
-                randomHole.appendChild(moleImg);
+                    // add event listener to mole 
+                    moleImg.addEventListener('click', () => {
+                        randomHoleMole.removeChild(moleImg);
+                        updateScore();
+                        View.updateScore(getScore());
+                    })
 
-                // add event listener to mole 
-                moleImg.addEventListener('click', () => {
-                    randomHole.removeChild(moleImg);
-                    Model.updateScore();
-                    View.updateScore(Model.getScore());
-                })
-
-                // disappear after 2s after clicking 
-                setTimeout(() => {
-                    if (randomHole.contains(moleImg)) {
-                        randomHole.removeChild(moleImg);
-                    }
-                }, 2000);
+                    // disappear after 2s after clicking 
+                    setTimeout(() => {
+                        if (randomHoleMole.contains(moleImg)) {
+                            randomHoleMole.removeChild(moleImg);
+                        }
+                    }, 2000);
+                }
             }
         }
     };
@@ -125,45 +128,49 @@ const Model = ((view) => {
             const randomIndexSnake = Math.floor(Math.random() * holes.length);
             const randomHoleSnake = holes[randomIndexSnake];
 
-            // add snakes 
-            const snakeImg = document.createElement('img');
-            snakeImg.classList.add('snake_img');
-            snakeImg.src = 'mine.jpeg';
-            randomHoleSnake.appendChild(snakeImg);
+            // check if a snake already exists 
+            const existingSnake = randomHoleSnake.querySelector('.snake_img');
+            if (!existingSnake) {
+                // add snakes 
+                const snakeImg = document.createElement('img');
+                snakeImg.classList.add('snake_img');
+                snakeImg.src = 'mine.jpeg';
+                randomHoleSnake.appendChild(snakeImg);
 
-            // disappear after 2s after clicking 
-            setTimeout(() => {
-                if (randomHoleSnake.contains(snakeImg)) {
-                    randomHoleSnake.removeChild(snakeImg);
-                }
-            }, 2000);
-
-            // add event listener to snake 
-            snakeImg.addEventListener('click', () => {
-                // update score 
-                Model.updateScore();
-                View.updateScore(Model.getScore());
-
-                // clear holes  
-                resetBoard();
-                clearInterval(moleInterval);
-                clearInterval(snakeInterval);
-
-                // all snakes appear 
-                holes.forEach(hole => {
-                    const snakeImg = document.createElement('img');
-                    snakeImg.classList.add('snake_img');
-                    snakeImg.src = 'mine.jpeg';
-                    hole.appendChild(snakeImg);
-                });
-
-                // disappear after 2s after showing all 
+                // disappear after 2s after clicking 
                 setTimeout(() => {
-                    holes.forEach(hole => {
-                        hole.innerHTML = '';
-                    });
+                    if (randomHoleSnake.contains(snakeImg)) {
+                        randomHoleSnake.removeChild(snakeImg);
+                    }
                 }, 2000);
-            })
+
+                // add event listener to snake 
+                snakeImg.addEventListener('click', () => {
+                    // update score 
+                    updateScore();
+                    View.updateScore(getScore());
+                    gameStarted = false;
+
+                    // clear holes  
+                    resetBoard();
+
+                    // all snakes appear 
+                    holes.forEach(hole => {
+                        const snakeImg = document.createElement('img');
+                        snakeImg.classList.add('snake_img');
+                        snakeImg.src = 'mine.jpeg';
+                        hole.appendChild(snakeImg);
+                    });
+
+                    // disappear after 2s after showing all 
+                    setTimeout(() => {
+                        holes.forEach(hole => {
+                            hole.innerHTML = '';
+                            gameStarted = true;
+                        });
+                    }, 2000);
+                });
+            }
         }
     };
 
@@ -182,8 +189,8 @@ const Model = ((view) => {
 
 // controller
 const Controller = ((view, model) => {
-    const { domSelector, renderBoard, showMole } = view;
-    const { resetScore, startGame, resetGame, resetBoard } = model;
+    const { domSelector, renderBoard } = view;
+    const { resetScore, startGame, resetGame, resetBoard, gameStarted } = model;
 
     // start game, start count down 
     domSelector.startGameBtn.addEventListener('click', () => {
