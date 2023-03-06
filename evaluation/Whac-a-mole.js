@@ -128,49 +128,34 @@ const Model = ((view) => {
             const randomIndexSnake = Math.floor(Math.random() * holes.length);
             const randomHoleSnake = holes[randomIndexSnake];
 
-            // check if a snake already exists 
-            const existingSnake = randomHoleSnake.querySelector('.snake_img');
-            if (!existingSnake) {
-                // add snakes 
-                const snakeImg = document.createElement('img');
-                snakeImg.classList.add('snake_img');
-                snakeImg.src = 'mine.jpeg';
-                randomHoleSnake.appendChild(snakeImg);
+            // add snakes 
+            const snakeImg = document.createElement('img');
+            snakeImg.classList.add('snake_img');
+            snakeImg.src = 'mine.jpeg';
+            randomHoleSnake.appendChild(snakeImg);
 
-                // disappear after 2s after clicking 
-                setTimeout(() => {
-                    if (randomHoleSnake.contains(snakeImg)) {
-                        randomHoleSnake.removeChild(snakeImg);
-                    }
-                }, 2000);
+            // disappear after 2s after clicking 
+            setTimeout(() => {
+                if (randomHoleSnake.contains(snakeImg)) {
+                    randomHoleSnake.removeChild(snakeImg);
+                }
+            }, 2000);
 
-                // add event listener to snake 
-                snakeImg.addEventListener('click', () => {
-                    // update score 
-                    updateScore();
-                    View.updateScore(getScore());
-                    gameStarted = false;
+            // add event listener to snake 
+            snakeImg.addEventListener('click', () => {
+                gameStarted = false;
 
-                    // clear holes  
-                    resetBoard();
+                // clear holes  
+                resetBoard();
 
-                    // all snakes appear 
-                    holes.forEach(hole => {
-                        const snakeImg = document.createElement('img');
-                        snakeImg.classList.add('snake_img');
-                        snakeImg.src = 'mine.jpeg';
-                        hole.appendChild(snakeImg);
-                    });
-
-                    // disappear after 2s after showing all 
-                    setTimeout(() => {
-                        holes.forEach(hole => {
-                            hole.innerHTML = '';
-                            gameStarted = true;
-                        });
-                    }, 2000);
+                // all snakes appear 
+                holes.forEach(hole => {
+                    const snakeImg = document.createElement('img');
+                    snakeImg.classList.add('snake_img');
+                    snakeImg.src = 'mine.jpeg';
+                    hole.appendChild(snakeImg);
                 });
-            }
+            });
         }
     };
 
